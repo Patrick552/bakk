@@ -37,6 +37,7 @@ public class EncodeThread extends Thread {
 				size.height);
 		writerCam.addAudioStream(1, 0, ICodec.ID.CODEC_ID_AAC, 2, 44100);
 		// andere Abbruchbedingung
+		// TEST
 		while (!(camQueue.isEmpty())) {
 			System.out.println("CamQueue has " + camQueue.size() + " Elements");
 			try {
