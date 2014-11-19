@@ -6,6 +6,9 @@ import static java.util.concurrent.TimeUnit.NANOSECONDS;
 import java.awt.Dimension;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import at.jku.wall.xuggler.thread.AudioSample;
+import at.jku.wall.xuggler.thread.CamImage;
+
 import com.github.sarxos.webcam.WebcamResolution;
 import com.xuggle.mediatool.IMediaWriter;
 import com.xuggle.mediatool.ToolFactory;
