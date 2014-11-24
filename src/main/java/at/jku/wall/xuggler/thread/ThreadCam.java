@@ -18,20 +18,17 @@ public class ThreadCam extends Thread {
 
 	// Collects all Images from the Cam and saves it an a Queue
 	public void run() {
-		int i = 1;
 		
 		//webcam.open(true);
 		long startTime = System.nanoTime();
 		while (!abort) {
-			long ts = System.nanoTime() - startTime;
-			BufferedImage bImg = webcam.getImage();
+			long ts = (System.nanoTime() - startTime);
+			BufferedImage bImg = webcam.getImage(); 
 			CamImage image = new CamImage(bImg, ts);
 
 			try {
 				camQueue.put(image);
-				
-				System.out.println("frame: " + i + " to queue und Zeit: " + image.timeStamp);
-				i++;
+				System.out.println("frame: " + camQueue.size() + " to queue und Zeit: " + image.timeStamp);
 				
 			} catch (InterruptedException e) {
 				e.printStackTrace();

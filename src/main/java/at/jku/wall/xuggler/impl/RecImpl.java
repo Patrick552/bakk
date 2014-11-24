@@ -80,7 +80,6 @@ public class RecImpl implements ActionListener {
 		ThreadAudio threadAudio = new ThreadAudio();
 
 		// start recording all Images and write it to the Queue
-		// start earlier because of avoiding NULLPointer
 		threadCam.start();
 		// start audio record
 		threadAudio.start();
@@ -144,9 +143,9 @@ public class RecImpl implements ActionListener {
 				System.out.println("CamThread Stopped");
 				threadAudio.setAbort(true);
 				System.out.println("AudioThread Stopped");
-
-//				threadCam.join();
-//				threadAudio.join();
+				
+				threadCam.join();
+				threadAudio.join();
 				
 				EncodeThread encode = new EncodeThread(threadCam.getCamQueue(),
 						threadAudio.getAudioQueue(), CamFileDir.getText());
@@ -161,7 +160,6 @@ public class RecImpl implements ActionListener {
 //		webcam.close();
 		// writerSkript.flush();
 		// writerSkript.close();
-		System.out.println("Finish Start Recording");
 
 	}
 

@@ -21,6 +21,8 @@ public class EncodeThread extends Thread {
 	public String CamFileDir;
 
 	public static IMediaWriter writerCam;
+	
+	public boolean abort = false;
 
 	public EncodeThread(LinkedBlockingQueue<CamImage> camQueue,
 			LinkedBlockingQueue<AudioSample> audioQueue, String CamFileDir) {
@@ -40,19 +42,22 @@ public class EncodeThread extends Thread {
 				size.height);
 		writerCam.addAudioStream(1, 0, ICodec.ID.CODEC_ID_AAC, 2, 44100);
 		// andere Abbruchbedingung
-		// TEST
-		while (!(camQueue.isEmpty())) {
+		
+		while (!abort) {
 			System.out.println("CamQueue has " + camQueue.size() + " Elements");
 			try {
 				CamImage image = camQueue.take();
-				System.err.println("" + (image.getTimeStamp()));
+				long ts = image.getTimeStamp();
+				System.err.println("" + (ts));
 				writerCam.encodeVideo(0, prepareForEncoding(image.getImage()),
-						image.getTimeStamp(), NANOSECONDS);
-				//if is empty
-				// take
+						ts, NANOSECONDS);
+
 				if(!audioQueue.isEmpty()) {
 					AudioSample sample = audioQueue.take();
 					writerCam.encodeAudio(1, sample.getSamples());
+				}
+				if (camQueue.isEmpty() && audioQueue.isEmpty()) {
+					abort=true;
 				}
 			} catch (InterruptedException e) {
 				e.printStackTrace();
