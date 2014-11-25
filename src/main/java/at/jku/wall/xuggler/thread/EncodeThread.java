@@ -4,6 +4,7 @@ import static at.jku.wall.xuggler.impl.Helper.prepareForEncoding;
 import static java.util.concurrent.TimeUnit.NANOSECONDS;
 
 import java.awt.Dimension;
+import java.awt.image.BufferedImage;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import at.jku.wall.xuggler.thread.AudioSample;
@@ -16,13 +17,12 @@ import com.xuggle.xuggler.ICodec;
 
 public class EncodeThread extends Thread {
 
-	public LinkedBlockingQueue<CamImage> camQueue = new LinkedBlockingQueue<CamImage>();
-	public LinkedBlockingQueue<AudioSample> audioQueue = new LinkedBlockingQueue<AudioSample>();
-	public String CamFileDir;
+	public final LinkedBlockingQueue<CamImage> camQueue;
+	public final LinkedBlockingQueue<AudioSample> audioQueue;
+	public final String CamFileDir;
 
 	public static IMediaWriter writerCam;
 	
-	public boolean abort = false;
 
 	public EncodeThread(LinkedBlockingQueue<CamImage> camQueue,
 			LinkedBlockingQueue<AudioSample> audioQueue, String CamFileDir) {
@@ -32,6 +32,7 @@ public class EncodeThread extends Thread {
 	}
 
 	public void run() {
+		boolean abort = false;
 
 		// XUGGLER preperation
 		writerCam = ToolFactory.makeWriter(CamFileDir);
@@ -48,8 +49,9 @@ public class EncodeThread extends Thread {
 			try {
 				CamImage image = camQueue.take();
 				long ts = image.getTimeStamp();
-				System.err.println("" + (ts));
-				writerCam.encodeVideo(0, prepareForEncoding(image.getImage()),
+				BufferedImage img = image.getImage();
+				System.err.println("" + (ts) + ": " + img.hashCode());
+				writerCam.encodeVideo(0, img,
 						ts, NANOSECONDS);
 
 				if(!audioQueue.isEmpty()) {

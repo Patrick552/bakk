@@ -144,15 +144,18 @@ public class RecImpl implements ActionListener {
 				threadAudio.setAbort(true);
 				System.out.println("AudioThread Stopped");
 				
+				// waits for both Threads until they die
 				threadCam.join();
 				threadAudio.join();
 				
+				//Thread.sleep(2000);
+								
 				EncodeThread encode = new EncodeThread(threadCam.getCamQueue(),
 						threadAudio.getAudioQueue(), CamFileDir.getText());
 				encode.run();
 				break;
 			}
-			
+			Thread.yield();
 		}
 
 //		writerCam.flush();

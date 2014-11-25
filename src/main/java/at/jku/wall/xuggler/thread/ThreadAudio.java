@@ -13,9 +13,8 @@ import com.xuggle.xuggler.IAudioSamples.Format;
 
 public class ThreadAudio extends Thread {
 
-	public LinkedBlockingQueue<AudioSample> audioQueue = new LinkedBlockingQueue<AudioSample>();
-	public int audioTime = 0;
-	public boolean abort = false;
+	public final LinkedBlockingQueue<AudioSample> audioQueue = new LinkedBlockingQueue<AudioSample>();
+	public volatile boolean abort = false;
 
 	public ThreadAudio() {
 
@@ -32,10 +31,11 @@ public class ThreadAudio extends Thread {
 			i++;
 			// sleep (??);
 		}
-		System.out.println("AudioThread KILL");
+		System.err.println("AudioThread KILL: ");
 	}
 
 	public IAudioSamples customAudioStream(/*IMediaWriter writerCam*/) {
+		int audioTime = 0;
 
 		// audio parameters
 		int channelCount = 2;
@@ -83,10 +83,6 @@ public class ThreadAudio extends Thread {
 		return audioQueue;
 	}
 
-	public void setAudioQueue(LinkedBlockingQueue<AudioSample> audioQueue) {
-		this.audioQueue = audioQueue;
-	}
-
 	public boolean getAbort() {
 		return abort;
 	}
@@ -94,6 +90,4 @@ public class ThreadAudio extends Thread {
 	public void setAbort(boolean abort) {
 		this.abort = abort;
 	}
-	
-	
 }
