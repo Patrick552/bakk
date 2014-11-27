@@ -1,14 +1,10 @@
 package at.jku.wall.xuggler.thread;
 
-import static at.jku.wall.xuggler.impl.Helper.prepareForEncoding;
 import static java.util.concurrent.TimeUnit.NANOSECONDS;
 
 import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 import java.util.concurrent.LinkedBlockingQueue;
-
-import at.jku.wall.xuggler.thread.AudioSample;
-import at.jku.wall.xuggler.thread.CamImage;
 
 import com.github.sarxos.webcam.WebcamResolution;
 import com.xuggle.mediatool.IMediaWriter;
@@ -42,7 +38,6 @@ public class EncodeThread extends Thread {
 		writerCam.addVideoStream(0, 0, ICodec.ID.CODEC_ID_H264, size.width,
 				size.height);
 		writerCam.addAudioStream(1, 0, ICodec.ID.CODEC_ID_AAC, 2, 44100);
-		// andere Abbruchbedingung
 		
 		while (!abort) {
 			System.out.println("CamQueue has " + camQueue.size() + " Elements");
@@ -50,12 +45,12 @@ public class EncodeThread extends Thread {
 				CamImage image = camQueue.take();
 				long ts = image.getTimeStamp();
 				BufferedImage img = image.getImage();
-				System.err.println("" + (ts) + ": " + img.hashCode());
-				writerCam.encodeVideo(0, img,
-						ts, NANOSECONDS);
+				System.err.println("" + (ts) + ": "/* + img.hashCode()*/);
+				writerCam.encodeVideo(0, img, ts, NANOSECONDS);
 
 				if(!audioQueue.isEmpty()) {
 					AudioSample sample = audioQueue.take();
+					long audioTs = sample.getTimpStamp();
 					writerCam.encodeAudio(1, sample.getSamples());
 				}
 				if (camQueue.isEmpty() && audioQueue.isEmpty()) {

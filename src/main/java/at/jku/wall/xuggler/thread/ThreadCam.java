@@ -30,6 +30,7 @@ public class ThreadCam extends Thread {
 			// wenn man erst später beim encoden auf das object zugreift wird nicht das gespeicherte sondern das
 			// aktuelle Bild genommen
 			CamImage image = new CamImage(prepareForEncoding(bImg), ts);
+//			System.out.println(bImg.getClass().getName());
 
 			try {
 				camQueue.put(image);
@@ -43,12 +44,12 @@ public class ThreadCam extends Thread {
 			}
 		}
 		System.err.println("CamThread Kill: ");
-		try {
-			Thread.sleep(1000);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-			Thread.currentThread().interrupt();
-		}
+//		try {
+//			Thread.sleep(1000);
+//		} catch (InterruptedException e) {
+//			e.printStackTrace();
+//			Thread.currentThread().interrupt();
+//		}
 	}
 
 	public LinkedBlockingQueue<CamImage> getCamQueue() {

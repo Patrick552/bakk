@@ -148,14 +148,12 @@ public class RecImpl implements ActionListener {
 				threadCam.join();
 				threadAudio.join();
 				
-				//Thread.sleep(2000);
-								
 				EncodeThread encode = new EncodeThread(threadCam.getCamQueue(),
 						threadAudio.getAudioQueue(), CamFileDir.getText());
 				encode.run();
 				break;
 			}
-			Thread.yield();
+			//Thread.yield();
 		}
 
 //		writerCam.flush();

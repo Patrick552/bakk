@@ -41,9 +41,46 @@ public class ThreadAudio extends Thread {
 		int channelCount = 2;
 		int sampleRate = 44100;
 
-//		IContainer container = writerCam.getContainer();
-//		IStream stream = container.getStream(1);
-//		int sampleCount = stream.getStreamCoder().getDefaultAudioFrameSize();
+		// create new audio samples buffer
+		IAudioSamples samples = IAudioSamples.make(1024 * 5, channelCount,
+				IAudioSamples.Format.FMT_S16);
+		
+		// setup code
+		TargetDataLine line = null;
+		
+		AudioFormat audioFormat = new AudioFormat(sampleRate, (int) 16,
+				channelCount, true, false);
+		DataLine.Info info = new DataLine.Info(TargetDataLine.class,
+				audioFormat);
+		try {
+			line = (TargetDataLine) AudioSystem.getLine(info);
+			line.open(audioFormat);
+		} catch (LineUnavailableException ex) {
+			System.out.println("ERROR: " + ex.toString());
+		}
+
+		line.start();
+		// end setup code
+		
+		byte[] data = new byte[4096 * 5];
+		int sz = line.read(data, 0, data.length);
+
+		samples.put(data, 0, 0, sz);
+		// samples.setPts(aValue); hier noch starttime - system.nanotime einbauen
+		audioTime += (sz);
+
+		samples.setComplete(true, sz / 4, sampleRate, channelCount,
+				Format.FMT_S16, audioTime / 4);
+
+		return (samples);
+	}
+	/*
+	public short[] customAudioStreamArray() {
+		int audioTime = 0;
+
+		// audio parameters
+		int channelCount = 2;
+		int sampleRate = 44100;
 
 		// create a place for audio samples
 		IAudioSamples samples = IAudioSamples.make(1024 * 5, channelCount,
@@ -78,7 +115,7 @@ public class ThreadAudio extends Thread {
 
 		return (samples);
 	}
-
+*/
 	public LinkedBlockingQueue<AudioSample> getAudioQueue() {
 		return audioQueue;
 	}
