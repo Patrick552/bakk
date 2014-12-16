@@ -5,6 +5,13 @@ import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -24,19 +31,42 @@ import com.github.sarxos.webcam.WebcamResolution;
 public class GuiRec extends JFrame {
 
 	private static final long serialVersionUID = 1L;
-	private JTextField skript;
+	private JTextField skriptPdf;
 	private JTextField fileCamName;
 	private JTextField fileSkriptName;
 
 	private JButton recordButton = null;
 
-	public Webcam webcam = Webcam.getDefault();
-	
+	public Webcam webcam = Webcam.getDefault();;
+
 	public static JFrame recFrame = new JFrame();
 
+	private Properties userSettings;
+
 	public GuiRec() {
+		loadProperties();
 		initUi();
 		initWebCam();
+	}
+
+	private void loadProperties() {
+		this.userSettings = new Properties();
+		try {
+			this.userSettings.load(new FileInputStream(System
+					.getProperty("user.home")
+					+ "/.screenrecorder/recorder.properties"));
+		} catch (Throwable t) {
+			// Ignore just in case the file does not exist yet
+		}
+	}
+
+	private void saveProperties() throws FileNotFoundException, IOException {
+		File settingsFolder = new File(System.getProperty("user.home")
+				+ "/.screenrecorder");
+		settingsFolder.mkdirs();
+		this.userSettings.store(
+				new FileOutputStream(System.getProperty("user.home")
+						+ "/.screenrecorder/recorder.properties"), "");
 	}
 
 	private void initUi() {
@@ -46,8 +76,8 @@ public class GuiRec extends JFrame {
 		getContentPane().setLayout(
 				new BoxLayout(getContentPane(), BoxLayout.LINE_AXIS));
 
-		skript = new JTextField();
-		skript.setColumns(50);
+		skriptPdf = new JTextField();
+		skriptPdf.setColumns(50);
 
 		Box inputBox = Box.createVerticalBox();
 		Box fileBox = Box.createHorizontalBox();
@@ -62,7 +92,7 @@ public class GuiRec extends JFrame {
 		fileBox.add(Box.createHorizontalStrut(10));
 		fileBox.add(new JLabel("Skriptum"));
 		fileBox.add(Box.createHorizontalStrut(10));
-		fileBox.add(skript);
+		fileBox.add(skriptPdf);
 		fileBox.add(Box.createHorizontalStrut(10));
 		fileBox.add(SkriptDirButton);
 		SkriptDirButton.addActionListener(new ActionListener() {
@@ -84,13 +114,13 @@ public class GuiRec extends JFrame {
 				});
 				if (fc.showOpenDialog(recFrame) == JFileChooser.APPROVE_OPTION) {
 					File f = fc.getSelectedFile();
-					skript.setText(f.getAbsolutePath());
+					skriptPdf.setText(f.getAbsolutePath());
 				}
 			}
 		});
 
 		// Prepare saveCamBox
-		fileCamName = new JTextField();
+		fileCamName = new JTextField(userSettings.getProperty("camFile"));
 		fileCamName.setColumns(50);
 		saveCamBox.add(Box.createHorizontalStrut(10));
 		saveCamBox.add(new JLabel("Save Cam cast:"));
@@ -118,14 +148,25 @@ public class GuiRec extends JFrame {
 				if (fc.showSaveDialog(recFrame) == JFileChooser.APPROVE_OPTION) {
 					File f = fc.getSelectedFile();
 					fileCamName.setText(f.getAbsolutePath());
+					userSettings.setProperty("camFile", f.getAbsolutePath());
+					try {
+						saveProperties();
+					} catch (FileNotFoundException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
 				}
 			}
 		});
 
 		// saveSkriptBox
 
-		fileSkriptName = new JTextField();
+		fileSkriptName = new JTextField(userSettings.getProperty("screenFile"));
 		fileSkriptName.setColumns(50);
+		
 		saveSkriptBox.add(Box.createHorizontalStrut(10));
 		saveSkriptBox.add(new JLabel("Save Skript cast:"));
 		saveSkriptBox.add(Box.createHorizontalStrut(10));
@@ -152,6 +193,16 @@ public class GuiRec extends JFrame {
 				if (fc.showSaveDialog(recFrame) == JFileChooser.APPROVE_OPTION) {
 					File f = fc.getSelectedFile();
 					fileSkriptName.setText(f.getAbsolutePath());
+					userSettings.setProperty("screenFile", f.getAbsolutePath());
+					try {
+						saveProperties();
+					} catch (FileNotFoundException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
 				}
 			}
 		});
@@ -174,7 +225,7 @@ public class GuiRec extends JFrame {
 
 		try {
 			recordButton.addActionListener(new RecImpl(recordButton,
-					fileCamName, skript, webcam));
+					skriptPdf, fileCamName, fileSkriptName , webcam));
 		} catch (AWTException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -188,16 +239,16 @@ public class GuiRec extends JFrame {
 
 	public void initWebCam() {
 
+		// webcam = Webcam.getDefault();
+
 		Dimension size = WebcamResolution.QVGA.getSize();
 
 		webcam.setViewSize(size);
-		// Liste aller angeschlossenen WebCams UNGETESTET
+		// Liste aller angeschlossenen WebCams
 		// List<Webcam> camList = Webcam.getWebcams();
-		//
 		// for (int i = 0; i < camList.size(); i++) {
 		// try {
-		// Webcam temp = camList.get(i);
-		// System.out.println("(" + i + ") Webcam: " + temp.getName());
+		// System.out.println("(" + i + ") Webcam: " + camList.get(i));
 		// } catch (Exception e) {
 		// System.out.println("Error CAM: " + i);
 		// }

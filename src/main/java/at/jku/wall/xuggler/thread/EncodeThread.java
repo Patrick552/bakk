@@ -16,9 +16,9 @@ public class EncodeThread extends Thread {
 	public final LinkedBlockingQueue<CamImage> camQueue;
 	public final LinkedBlockingQueue<AudioSample> audioQueue;
 	public final String CamFileDir;
+	public volatile boolean abort = false;
 
 	public static IMediaWriter writerCam;
-	
 
 	public EncodeThread(LinkedBlockingQueue<CamImage> camQueue,
 			LinkedBlockingQueue<AudioSample> audioQueue, String CamFileDir) {
@@ -28,7 +28,8 @@ public class EncodeThread extends Thread {
 	}
 
 	public void run() {
-		boolean abort = false;
+		boolean emptyQueues = false;
+		
 
 		// XUGGLER preperation
 		writerCam = ToolFactory.makeWriter(CamFileDir);
@@ -38,34 +39,45 @@ public class EncodeThread extends Thread {
 		writerCam.addVideoStream(0, 0, ICodec.ID.CODEC_ID_H264, size.width,
 				size.height);
 		writerCam.addAudioStream(1, 0, ICodec.ID.CODEC_ID_AAC, 2, 44100);
-		
-		while (!abort) {
+
+		System.out.println("abort: " + abort + " emptyQueues: " + emptyQueues);
+		while ((!abort) && (!emptyQueues)) {
 			System.out.println("CamQueue has " + camQueue.size() + " Elements");
 			try {
 				CamImage image = camQueue.take();
 				long ts = image.getTimeStamp();
 				BufferedImage img = image.getImage();
-				System.err.println("" + (ts) + ": "/* + img.hashCode()*/);
+				System.err.println("" + (ts) + ": "/* + img.hashCode() */);
 				writerCam.encodeVideo(0, img, ts, NANOSECONDS);
 
-				if(!audioQueue.isEmpty()) {
+				if (!audioQueue.isEmpty()) {
 					AudioSample sample = audioQueue.take();
 					long audioTs = sample.getTimpStamp();
 					writerCam.encodeAudio(1, sample.getSamples());
 				}
 				if (camQueue.isEmpty() && audioQueue.isEmpty()) {
-					abort=true;
+					emptyQueues = true;
+				} else {
+					emptyQueues = false;
 				}
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-			
+
 		}
 
 		writerCam.flush();
 		writerCam.close();
-		
+
 		System.out.println("File Encoded !");
+	}
+
+	public boolean isAbort() {
+		return abort;
+	}
+
+	public void setAbort(boolean abort) {
+		this.abort = abort;
 	}
 
 }

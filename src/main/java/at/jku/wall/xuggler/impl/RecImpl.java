@@ -3,16 +3,17 @@ package at.jku.wall.xuggler.impl;
 import java.awt.AWTException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.concurrent.CountDownLatch;
 
 import javax.swing.JButton;
 import javax.swing.JTextField;
 
 import at.jku.wall.xuggler.thread.EncodeThread;
+import at.jku.wall.xuggler.thread.ScreenThread;
 import at.jku.wall.xuggler.thread.ThreadAudio;
 import at.jku.wall.xuggler.thread.ThreadCam;
 
 import com.github.sarxos.webcam.Webcam;
-import com.xuggle.mediatool.IMediaWriter;
 
 public class RecImpl implements ActionListener {
 
@@ -20,20 +21,21 @@ public class RecImpl implements ActionListener {
 
 	private final JTextField CamFileDir;
 	private final JTextField SkriptFileDir;
+	private final JTextField ScreenRecordDir;
 	private Webcam webcam;
 
 	private JButton button;
 
 	public Helper appShot = new Helper();
 
-	public static IMediaWriter writerCam;
-	public static IMediaWriter writerSkript;
+	// public static IMediaWriter writerCam;
+	// public static IMediaWriter writerSkript;
 
 	private volatile boolean abortFlag = false;
 	private boolean initFlag = false;
 
-	public RecImpl(JButton button, JTextField CamFileDir,
-			JTextField SkriptFileDir, Webcam webcam) throws AWTException {
+	public RecImpl(JButton button, 
+			JTextField SkriptFileDir,JTextField CamFileDir, JTextField ScreenRecordDir, Webcam webcam) throws AWTException {
 
 		this.button = button;
 
@@ -47,12 +49,13 @@ public class RecImpl implements ActionListener {
 		}
 		this.CamFileDir = CamFileDir;
 		this.SkriptFileDir = SkriptFileDir;
+		this.ScreenRecordDir = ScreenRecordDir;
 		this.webcam = webcam;
 
 		// eventuell pruefen ob *.mp4 file
 	}
 
-	public void startRecording() throws InterruptedException {
+	public void startRecording() throws InterruptedException, AWTException {
 
 		// System.out.println(CamFileDir.getText());
 
@@ -72,17 +75,31 @@ public class RecImpl implements ActionListener {
 
 		// //////// Cam Record
 		// ////////////////////////////////////////////////////
+		
+		CountDownLatch countdown = new CountDownLatch(2);
+		
 
 		// Cam Thread
-		ThreadCam threadCam = new ThreadCam(webcam.getName(), webcam);
+		ThreadCam threadCam = new ThreadCam(webcam.getName(), webcam, countdown);
 
 		// Audio Thread
-		ThreadAudio threadAudio = new ThreadAudio();
+		ThreadAudio threadAudio = new ThreadAudio(countdown);
+
+		// Appshot thread
+		ScreenThread threadScreen = new ScreenThread(ScreenRecordDir.getText(),
+				20);
 
 		// start recording all Images and write it to the Queue
 		threadCam.start();
 		// start audio record
 		threadAudio.start();
+		// starts appshots
+		threadScreen.start();
+		
+//		Thread.sleep(1000L);
+		
+		
+
 
 		// // XUGGLER preperation
 		// writerCam = ToolFactory.makeWriter(CamFileDir.getText());
@@ -143,22 +160,34 @@ public class RecImpl implements ActionListener {
 				System.out.println("CamThread Stopped");
 				threadAudio.setAbort(true);
 				System.out.println("AudioThread Stopped");
-				
+				threadScreen.setAbort(true);
+				System.out.println("ScreenThread Stopped");
+
 				// waits for both Threads until they die
+				System.out.println("Waiting for cam thread");
 				threadCam.join();
+				System.out.println("Waiting for audio thread");
 				threadAudio.join();
+				System.out.println("Waiting for Screen thread");
+				threadScreen.join();
 				
+				
+				System.out.println("Starting encode thread");
 				EncodeThread encode = new EncodeThread(threadCam.getCamQueue(),
 						threadAudio.getAudioQueue(), CamFileDir.getText());
 				encode.run();
+//				System.out.println("TEST");
+//
+//				encode.setAbort(true);
+//				System.out.println("Set abort in encode true");
 				break;
 			}
-			//Thread.yield();
+			// Thread.yield();
 		}
 
-//		writerCam.flush();
-//		writerCam.close();
-//		webcam.close();
+		// writerCam.flush();
+		// writerCam.close();
+		// webcam.close();
 		// writerSkript.flush();
 		// writerSkript.close();
 
@@ -181,6 +210,9 @@ public class RecImpl implements ActionListener {
 						// System.out.println("Webcam closed");
 
 					} catch (InterruptedException e) {
+						e.printStackTrace();
+					} catch (AWTException e) {
+						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 				}
