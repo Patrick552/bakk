@@ -18,7 +18,8 @@ public class ThreadAudio extends Thread {
 
 	public final LinkedBlockingQueue<AudioSample> audioQueue = new LinkedBlockingQueue<AudioSample>();
 	public volatile boolean abort = false;
-	long startTime = 0;
+//	public boolean setUpDone = false;
+	public long startTime = 0;
 	public CountDownLatch countdown;
 
 	public ThreadAudio(CountDownLatch countdown) {
@@ -29,6 +30,9 @@ public class ThreadAudio extends Thread {
 	public void run() {
 		int i = 1;
 		
+		// Done before because the setupCode needs to much time for live recording
+		IAudioSamples temp = customAudioStream();
+		
 		try {
 			countdown.countDown();
 			countdown.await();
@@ -38,12 +42,11 @@ public class ThreadAudio extends Thread {
 		System.out.println("Started recording audio at "+ System.nanoTime());
 		startTime = System.nanoTime();
 		while (!abort) {
-			IAudioSamples temp = customAudioStream();
+			temp = customAudioStream();			
 			AudioSample sample = new AudioSample(temp, System.nanoTime() - startTime);
 			audioQueue.add(sample);
 			if(Settings.DEBUG_AUDIO) System.out.println("Audio Sample " + i + " saved by: " + sample.getTimpStamp());
 			i++;
-			// sleep (??);
 		}
 		System.err.println("AudioThread KILL: ");
 	}
