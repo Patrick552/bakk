@@ -96,6 +96,44 @@ public class ThreadAudio extends Thread {
 
 		return (samples);
 	}
+	
+//	public short[] custiomAudioStreamArray () throws LineUnavailableException {
+//		// Pick a format. Need 16 bits, the rest can be set to anything
+//		// It is better to enumerate the formats that the system supports, because getLine() can error out with any particular format
+//		AudioFormat audioFormat = new AudioFormat(44100.0F, 16, 2, true, false); 
+//
+//		// Get default TargetDataLine with that format
+//		DataLine.Info dataLineInfo = new DataLine.Info( TargetDataLine.class, audioFormat );
+//		TargetDataLine line = (TargetDataLine) AudioSystem.getLine(dataLineInfo);
+//
+//		// Open and start capturing audio    
+//		line.open(audioFormat, line.getBufferSize());
+//		line.start();
+//
+//		while (true) {
+//		    // read as raw bytes
+//		    byte[] audioBytes = new byte[ line.getBufferSize() / 2 ]; // best size?
+//		    int numBytesRead = 0;
+//		    numBytesRead =  line.read(audioBytes, 0, audioBytes.length);
+//
+//		    // convert to signed shorts representing samples
+//		    int numSamplesRead = numBytesRead / 2;
+//		    short[] audioSamples = new short[ numSamplesRead ];
+//		    if (audioFormat.isBigEndian()) {
+//		        for (int i = 0; i < numSamplesRead; i++) {
+//		            audioSamples[i] = (short)((audioBytes[2*i] << 8) | audioBytes[2*i + 1]);
+//		        }
+//		    }
+//		    else {
+//		        for (int i = 0; i < numSamplesRead; i++) {
+//		            audioSamples[i] = (short)((audioBytes[2*i + 1] << 8) | audioBytes[2*i]);
+//		        }
+//		    }
+//
+//		    // use audioSamples in Xuggler etc
+//		}
+//	}
+	
 	/*
 	public short[] customAudioStreamArray() {
 		int audioTime = 0;
