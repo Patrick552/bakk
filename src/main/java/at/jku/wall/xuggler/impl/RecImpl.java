@@ -1,6 +1,7 @@
 package at.jku.wall.xuggler.impl;
 
 import java.awt.AWTException;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.concurrent.CountDownLatch;
@@ -8,6 +9,7 @@ import java.util.concurrent.CountDownLatch;
 import javax.swing.JButton;
 import javax.swing.JTextField;
 
+import at.jku.wall.xuggler.finalGui;
 import at.jku.wall.xuggler.thread.EncodeThread;
 import at.jku.wall.xuggler.thread.ScreenThread;
 import at.jku.wall.xuggler.thread.ThreadAudio;
@@ -25,6 +27,9 @@ public class RecImpl implements ActionListener {
 	private Webcam webcam;
 
 	private JButton button;
+	
+	private Point p1;
+	private Point p2;
 
 	public Helper appShot = new Helper();
 
@@ -35,7 +40,7 @@ public class RecImpl implements ActionListener {
 	private boolean initFlag = false;
 
 	public RecImpl(JButton button, 
-			JTextField SkriptFileDir,JTextField CamFileDir, JTextField ScreenRecordDir, Webcam webcam) throws AWTException {
+			JTextField SkriptFileDir,JTextField CamFileDir, JTextField ScreenRecordDir, Webcam webcam/*, Point p1, Point p2*/) throws AWTException {
 
 		this.button = button;
 
@@ -47,6 +52,12 @@ public class RecImpl implements ActionListener {
 			System.out.println("Webcam = NULL !?!?!");
 			System.exit(0);
 		}
+		if (p1 == null || p2 == null) {
+			System.out.println("Bounding Error!");
+		}
+//		this.p1 = p1;
+//		this.p2 = p2;
+		
 		this.CamFileDir = CamFileDir;
 		this.SkriptFileDir = SkriptFileDir;
 		this.ScreenRecordDir = ScreenRecordDir;
@@ -56,22 +67,6 @@ public class RecImpl implements ActionListener {
 	}
 
 	public void startRecording() throws InterruptedException, AWTException {
-
-		// System.out.println(CamFileDir.getText());
-
-		// Open PDF File
-		// if (Desktop.isDesktopSupported()) {
-		// try {
-		// if (!(SkriptFileDir.getText().equals(""))) {
-		// File pdfFile = new File(SkriptFileDir.getText());
-		// Desktop.getDesktop().open(pdfFile);
-		// } else {
-		// System.out.println("PDF ERROR");
-		// }
-		// } catch (IOException ex) {
-		//
-		// }
-		// }
 
 		// //////// Cam Record
 		// ////////////////////////////////////////////////////
@@ -96,9 +91,12 @@ public class RecImpl implements ActionListener {
 		// starts appshots
 		threadScreen.start();
 		
-//		Thread.sleep(1000L);
+		Thread.sleep(10000L);
 		
-		
+		System.out.println("Starting encode thread");
+		EncodeThread encode = new EncodeThread(threadCam.getCamQueue(),
+				threadAudio.getAudioQueue(), CamFileDir.getText());
+		encode.run();
 
 
 		// // XUGGLER preperation
@@ -155,13 +153,15 @@ public class RecImpl implements ActionListener {
 		while (true) {
 			if (abortFlag) {
 
-				// Stop writing to Queue and stops Thread hard
+				// Stop writing to Queue and stops Threads
 				threadCam.setAbort(true);
 				System.out.println("CamThread Stopped");
 				threadAudio.setAbort(true);
 				System.out.println("AudioThread Stopped");
 				threadScreen.setAbort(true);
 				System.out.println("ScreenThread Stopped");
+				encode.setAbort(true);
+				System.out.println("Encode Thread Stopped");
 
 				// waits for both Threads until they die
 				System.out.println("Waiting for cam thread");
@@ -170,26 +170,13 @@ public class RecImpl implements ActionListener {
 				threadAudio.join();
 				System.out.println("Waiting for Screen thread");
 				threadScreen.join();
+				System.out.println("Waiting for Encode Thread");
+				encode.join();
 				
-				
-				System.out.println("Starting encode thread");
-				EncodeThread encode = new EncodeThread(threadCam.getCamQueue(),
-						threadAudio.getAudioQueue(), CamFileDir.getText());
-				encode.run();
-//				System.out.println("TEST");
-//
-//				encode.setAbort(true);
-//				System.out.println("Set abort in encode true");
 				break;
 			}
 			// Thread.yield();
 		}
-
-		// writerCam.flush();
-		// writerCam.close();
-		// webcam.close();
-		// writerSkript.flush();
-		// writerSkript.close();
 
 	}
 
@@ -202,6 +189,8 @@ public class RecImpl implements ActionListener {
 
 				public void run() {
 					try {
+						p1 = finalGui.p1;
+						p2 = finalGui.p2;
 						startRecording();
 						System.out.println("Recording has stopped!");
 						System.exit(1);

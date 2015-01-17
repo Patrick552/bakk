@@ -60,15 +60,16 @@ public class EncodeThread extends Thread {
 				} else {
 					emptyQueues = false;
 				}
+				System.err.println("abort: " + abort + " emptyQueues: " + emptyQueues);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
 
 		}
-
+		
 		writerCam.flush();
 		writerCam.close();
-
+		System.out.println("CamQueue has " + camQueue.size() + " Elements");
 		System.out.println("File Encoded !");
 	}
 

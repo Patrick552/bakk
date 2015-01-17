@@ -2,6 +2,7 @@ package at.jku.wall.xuggler;
 
 import java.awt.AWTException;
 import java.awt.Dimension;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -38,6 +39,9 @@ public class GuiRec extends JFrame {
 	public Webcam webcam = Webcam.getDefault();;
 
 	public static JFrame recFrame = new JFrame();
+	
+	public static Point p1;
+	public static Point p2;
 
 	private Properties userSettings;
 
@@ -223,7 +227,7 @@ public class GuiRec extends JFrame {
 
 		try {
 			recordButton.addActionListener(new RecImpl(recordButton,
-					skriptPdf, fileCamName, fileSkriptName , webcam));
+					skriptPdf, fileCamName, fileSkriptName , webcam/*, p1, p2*/));
 		} catch (AWTException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
