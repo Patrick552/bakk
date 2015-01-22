@@ -28,15 +28,17 @@ public class RecImpl implements ActionListener {
 
 	private JButton button;
 	
-	private Point p1;
-	private Point p2;
+	private Point p1 = null;
+	private Point p2 = null;
 
 	public Helper appShot = new Helper();
 
 	// public static IMediaWriter writerCam;
 	// public static IMediaWriter writerSkript;
 
-	private volatile boolean abortFlag = false;
+	private volatile boolean abortFlag = true;
+	private CountDownLatch quitLatch;
+	
 	private boolean initFlag = false;
 
 	public RecImpl(JButton button, 
@@ -96,7 +98,7 @@ public class RecImpl implements ActionListener {
 		System.out.println("Starting encode thread");
 		EncodeThread encode = new EncodeThread(threadCam.getCamQueue(),
 				threadAudio.getAudioQueue(), CamFileDir.getText());
-		encode.run();
+		encode.start();
 
 
 		// // XUGGLER preperation
@@ -150,41 +152,39 @@ public class RecImpl implements ActionListener {
 		// //////////////////////////////////////////////////////////////
 
 		// TRY //
-		while (true) {
-			if (abortFlag) {
+		this.quitLatch.await();
+		if (abortFlag) {
 
-				// Stop writing to Queue and stops Threads
-				threadCam.setAbort(true);
-				System.out.println("CamThread Stopped");
-				threadAudio.setAbort(true);
-				System.out.println("AudioThread Stopped");
-				threadScreen.setAbort(true);
-				System.out.println("ScreenThread Stopped");
-				encode.setAbort(true);
-				System.out.println("Encode Thread Stopped");
+			// Stop writing to Queue and stops Threads
+			threadCam.setAbort(true);
+			System.out.println("CamThread Stopped");
+			threadAudio.setAbort(true);
+			System.out.println("AudioThread Stopped");
+			threadScreen.setAbort(true);
+			System.out.println("ScreenThread Stopped");
+			encode.setAbort(true);
+			System.out.println("Encode Thread Stopped");
 
-				// waits for both Threads until they die
-				System.out.println("Waiting for cam thread");
-				threadCam.join();
-				System.out.println("Waiting for audio thread");
-				threadAudio.join();
-				System.out.println("Waiting for Screen thread");
-				threadScreen.join();
-				System.out.println("Waiting for Encode Thread");
-				encode.join();
-				
-				break;
-			}
-			// Thread.yield();
+			// waits for both Threads until they die
+			System.out.println("Waiting for cam thread");
+			threadCam.join();
+			System.out.println("Waiting for audio thread");
+			threadAudio.join();
+			System.out.println("Waiting for Screen thread");
+			threadScreen.join();
+			System.out.println("Waiting for Encode Thread");
+			encode.join();
 		}
+		// Thread.yield();
 
 	}
 
 	public void actionPerformed(ActionEvent e) {
-		if (!initFlag) {
+		if (abortFlag) {
 			System.out.println("Start recording");
 			abortFlag = false;
-
+			this.quitLatch = new CountDownLatch(1);
+			this.button.setText("Stop Recording");
 			Runnable r = new Runnable() {
 
 				public void run() {
@@ -207,10 +207,12 @@ public class RecImpl implements ActionListener {
 				}
 			};
 			(new Thread(r)).start();
-
+			
 		} else {
 			System.out.println("Stop recording");
 			abortFlag = true;
+			this.quitLatch.countDown();
+			this.button.setText("Start Recording");
 		}
 		initFlag = !initFlag;
 	}

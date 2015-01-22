@@ -41,11 +41,14 @@ public class EncodeThread extends Thread {
 		writerCam.addAudioStream(1, 0, ICodec.ID.CODEC_ID_AAC, 2, 44100);
 
 		System.out.println("abort: " + abort + " emptyQueues: " + emptyQueues);
-		while ((!abort) && (!emptyQueues)) {
+		while ((!abort) || (!emptyQueues)) {
+			System.err.println("abort: " + abort + " emptyQueues: " + emptyQueues);
 			System.out.println("CamQueue has " + camQueue.size() + " Elements");
 			try {
 				CamImage image = camQueue.take();
+				System.out.println("before take");
 				long ts = image.getTimeStamp();
+				System.out.println("after take");
 				BufferedImage img = image.getImage();
 				System.err.println("" + (ts) + ": "/* + img.hashCode() */);
 				writerCam.encodeVideo(0, img, ts, NANOSECONDS);
@@ -64,7 +67,7 @@ public class EncodeThread extends Thread {
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-
+			System.err.println("(!abort) && (!emptyQueues): " + ((!abort) && (!emptyQueues)));
 		}
 		
 		writerCam.flush();
