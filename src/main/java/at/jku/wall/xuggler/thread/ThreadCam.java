@@ -23,7 +23,7 @@ public class ThreadCam extends Thread {
 		this.countdown = countdown;
 	}
 
-	// Collects all Images from the Cam and saves it an a Queue
+	// Collects all Images from the Cam and saves it in a Queue
 	public void run() {
 		
 		//webcam.open(true);

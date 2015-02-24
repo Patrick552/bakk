@@ -90,6 +90,7 @@ public class finalGui extends JFrame {
 		JMenu tools = new JMenu("Tools");
 		// Add entries to tools
 		JMenuItem miRec = new JMenuItem("Record Tool");
+		// Not implemented yet
 		JMenuItem miPlay = new JMenuItem("Player Tool");
 		JMenuItem miQuit = new JMenuItem("Quit");
 		miQuit.addActionListener(new ActionListener() {
@@ -292,15 +293,14 @@ public class finalGui extends JFrame {
 				}
 
 				try {
+					// Wait to open the pdf file 
 					Thread.sleep(1000L);
 				} catch (InterruptedException e1) {
-					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
 
 				// Start measure Bounds
 				rect = new SelectionRect();
-				
 				
 			}
 		});
@@ -313,10 +313,8 @@ public class finalGui extends JFrame {
 			btnStartRecord.addActionListener(new RecImpl(btnStartRecord,
 					txtScript, txtCamDir, txtScreenDir, webcam));
 		} catch (AWTException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		
 		
 		frame.getContentPane().add(btnStartRecord);
 
@@ -336,7 +334,6 @@ public class finalGui extends JFrame {
 
 	public static void main(String[] args) {
 		finalGui app = new finalGui();
-
 	}
 
 }

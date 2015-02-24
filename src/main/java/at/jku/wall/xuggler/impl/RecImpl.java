@@ -1,6 +1,7 @@
 package at.jku.wall.xuggler.impl;
 
 import java.awt.AWTException;
+import java.awt.Frame;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -54,11 +55,6 @@ public class RecImpl implements ActionListener {
 			System.out.println("Webcam = NULL !?!?!");
 			System.exit(0);
 		}
-		if (p1 == null || p2 == null) {
-			System.out.println("Bounding Error!");
-		}
-//		this.p1 = p1;
-//		this.p2 = p2;
 		
 		this.CamFileDir = CamFileDir;
 		this.SkriptFileDir = SkriptFileDir;
@@ -182,6 +178,8 @@ public class RecImpl implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 		if (abortFlag) {
 			System.out.println("Start recording");
+			// minimize frame
+			finalGui.frame.setState(Frame.ICONIFIED);
 			abortFlag = false;
 			this.quitLatch = new CountDownLatch(1);
 			this.button.setText("Stop Recording");
@@ -194,14 +192,10 @@ public class RecImpl implements ActionListener {
 						startRecording();
 						System.out.println("Recording has stopped!");
 						System.exit(1);
-						// close Webcam
-						// webcam.close();
-						// System.out.println("Webcam closed");
 
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					} catch (AWTException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 				}

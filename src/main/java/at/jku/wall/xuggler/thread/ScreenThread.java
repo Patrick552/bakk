@@ -27,7 +27,7 @@ public class ScreenThread extends Thread {
 	public ScreenThread(String dir, long FPS) throws AWTException {
 		this.dir = dir;
 		this.FPS = FPS;
-		appshot = new ScreenImage(/*p1, p2*/);
+		appshot = new ScreenImage();
 	}
 
 	public void run(){
