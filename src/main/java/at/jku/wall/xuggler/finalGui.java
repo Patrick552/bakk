@@ -12,7 +12,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Properties;
 
 import javax.swing.JButton;
@@ -42,7 +41,7 @@ public class finalGui extends JFrame {
 	private JTextField txtScreenDir;
 	private JButton btnSelectArea;
 	private JButton btnStartRecord;
-	private JPanel CamPanel;
+//	private JPanel CamPanel;
 
 	public Webcam webcam = Webcam.getDefault();
 

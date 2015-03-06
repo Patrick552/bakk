@@ -6,19 +6,7 @@ import java.awt.Robot;
 import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
 
-import javax.sound.sampled.AudioFormat;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.DataLine;
-import javax.sound.sampled.LineUnavailableException;
-import javax.sound.sampled.TargetDataLine;
-
 import at.jku.wall.xuggler.thread.CamImage;
-
-import com.xuggle.mediatool.IMediaWriter;
-import com.xuggle.xuggler.IAudioSamples;
-import com.xuggle.xuggler.IAudioSamples.Format;
-import com.xuggle.xuggler.IContainer;
-import com.xuggle.xuggler.IStream;
 
 // Test Kopie von UE6 @matthiasSteinbauer
 

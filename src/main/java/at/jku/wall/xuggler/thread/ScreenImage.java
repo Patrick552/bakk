@@ -1,7 +1,6 @@
 package at.jku.wall.xuggler.thread;
 
 import java.awt.AWTException;
-import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Robot;
 import java.awt.Toolkit;

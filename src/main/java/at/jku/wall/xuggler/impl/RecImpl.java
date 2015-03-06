@@ -20,7 +20,7 @@ import com.github.sarxos.webcam.Webcam;
 
 public class RecImpl implements ActionListener {
 
-	private static final long FPS = 15;
+//	private static final long FPS = 15;
 
 	private final JTextField CamFileDir;
 	private final JTextField SkriptFileDir;

@@ -1,7 +1,6 @@
 package at.jku.wall.xuggler.thread;
 
 import java.awt.image.BufferedImage;
-import java.sql.Time;
 
 public class CamImage {
 	public BufferedImage image;

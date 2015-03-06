@@ -4,7 +4,6 @@ import static at.jku.wall.xuggler.impl.Helper.prepareForEncoding;
 import static java.util.concurrent.TimeUnit.NANOSECONDS;
 
 import java.awt.AWTException;
-import java.awt.Point;
 
 import at.jku.wall.xuggler.Settings;
 

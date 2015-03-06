@@ -3,12 +3,12 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>at.jku.wall</groupId>
-	<artifactId>lvaTool</artifactId>
+	<artifactId>CoRecT</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
-	<name>LVA Tool</name>
-	<description>Tool zeichnet LVAs auf und gibt diese in verschiedenen Modis wieder</description>
+	<name>CoRecT</name>
+	<description>CoRecT records video and audio from a webcam, additionally it records the screen in a defined area and saves this streams locally</description>
 	<url>http://maven.apache.org</url>
 
 	<properties>
