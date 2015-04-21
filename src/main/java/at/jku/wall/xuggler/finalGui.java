@@ -108,7 +108,7 @@ public class finalGui extends JFrame {
 		miInfo.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				JOptionPane.showMessageDialog(null,
-						"Recording Tool \nV1.0 \nAuthor: Patrick Wall");
+						"CoRecT \nV1.0 \nAuthor: Patrick Wall");
 			}
 		});
 		about.add(miInfo);
@@ -118,11 +118,11 @@ public class finalGui extends JFrame {
 
 		// End Menu Bar ///////////////////////////////////////
 
-		JLabel lblScript1 = new JLabel("Choose the script: ");
-		lblScript1.setBounds(20, 20, 120, 20);
+		JLabel lblScript1 = new JLabel("Choose the lecture material: ");
+		lblScript1.setBounds(20, 20, 200, 20);
 		frame.getContentPane().add(lblScript1);
 
-		JLabel lblScript2 = new JLabel("Script: ");
+		JLabel lblScript2 = new JLabel("script: ");
 		lblScript2.setBounds(20, 50, 45, 20);
 		frame.getContentPane().add(lblScript2);
 

@@ -8,7 +8,6 @@ import java.awt.image.BufferedImage;
 
 import at.jku.wall.xuggler.thread.CamImage;
 
-// Test Kopie von UE6 @matthiasSteinbauer
 
 public class Helper {
 
@@ -24,8 +23,6 @@ public class Helper {
 		}
 		toolkit = Toolkit.getDefaultToolkit();
 
-		// Aktuell noch ganzer Screen, wie bekommt an die abmessung der
-		// aktuellen APP ?
 		skriptSize = new Rectangle(toolkit.getScreenSize());
 	}
 

@@ -35,7 +35,6 @@ public class ScreenThread extends Thread {
 		try {
 			Thread.sleep(1000);
 		} catch (InterruptedException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 		writer = ToolFactory.makeWriter(dir);
